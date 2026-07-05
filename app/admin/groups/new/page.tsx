@@ -40,33 +40,39 @@ export default function NewGroupPage() {
       return
     }
 
-    // Auto-join as member
     await supabase.from('group_members').insert({ group_id: group.id, user_id: user.id })
-
     router.push(`/admin/groups/${group.id}`)
   }
 
   return (
-    <main className="max-w-md mx-auto px-4 py-8 space-y-6">
-      <div>
-        <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600">← 管理者</Link>
-        <h1 className="text-xl font-bold mt-1">グループを作成</h1>
-      </div>
+    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8">
+      <div className="w-full max-w-sm">
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-700">グループ名</label>
-          <input name="name" type="text" required placeholder="3年A組 / テニス同好会"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+        <div className="mb-6">
+          <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600">← 管理者</Link>
+          <h1 className="text-2xl font-bold text-gray-900 mt-2">グループを作成</h1>
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        <div className="bg-white rounded-3xl shadow-sm p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">グループ名</label>
+              <input name="name" type="text" required placeholder="3年A組 / テニス同好会"
+                className="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-400" />
+            </div>
 
-        <button type="submit" disabled={loading}
-          className="w-full bg-indigo-600 text-white rounded-xl py-3 text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50">
-          {loading ? '作成中...' : 'グループを作成する'}
-        </button>
-      </form>
+            {error && (
+              <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3">{error}</div>
+            )}
+
+            <button type="submit" disabled={loading}
+              className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 text-white rounded-xl py-3.5 font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 shadow-md shadow-violet-200 mt-2">
+              {loading ? '作成中...' : 'グループを作成する'}
+            </button>
+          </form>
+        </div>
+
+      </div>
     </main>
   )
 }

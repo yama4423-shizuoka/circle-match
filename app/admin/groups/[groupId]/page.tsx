@@ -18,7 +18,6 @@ export default async function GroupAdminPage({ params }: { params: Promise<{ gro
 
   if (!group || group.admin_id !== user.id) notFound()
 
-  // Members with profiles
   const { data: memberRows } = await supabase
     .from('group_members')
     .select('user_id, joined_at')
@@ -28,14 +27,10 @@ export default async function GroupAdminPage({ params }: { params: Promise<{ gro
   const memberIds = (memberRows ?? []).map(m => m.user_id)
   let members: Profile[] = []
   if (memberIds.length > 0) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .in('id', memberIds)
+    const { data } = await supabase.from('profiles').select('*').in('id', memberIds)
     members = (data as Profile[]) ?? []
   }
 
-  // Recent matches (last 30)
   const { data: matchRows } = await supabase
     .from('matches')
     .select('*')
@@ -53,60 +48,71 @@ export default async function GroupAdminPage({ params }: { params: Promise<{ gro
   const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/join/${group.invite_code}`
 
   return (
-    <main className="max-w-md mx-auto px-4 py-8 space-y-8">
-      <div>
-        <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600">← 管理者</Link>
-        <h1 className="text-xl font-bold mt-1">{group.name}</h1>
+    <main className="min-h-screen bg-gray-50 pb-10">
+      <div className="bg-white border-b border-gray-100 px-5 pt-14 pb-5">
+        <div className="max-w-md mx-auto">
+          <Link href="/admin" className="text-xs text-gray-400 hover:text-gray-600">← 管理者</Link>
+          <h1 className="text-xl font-bold text-gray-900 mt-1">{group.name}</h1>
+        </div>
       </div>
 
-      {/* Invite link */}
-      <section className="bg-indigo-50 rounded-2xl p-4 space-y-2">
-        <p className="text-xs font-semibold text-indigo-700">招待リンク</p>
-        <p className="text-xs text-indigo-500 break-all font-mono">{inviteUrl}</p>
-        <CopyButton text={inviteUrl} />
-      </section>
+      <div className="max-w-md mx-auto px-5 pt-5 space-y-6">
 
-      {/* Members */}
-      <section>
-        <h2 className="text-sm font-semibold text-gray-500 mb-3">参加者 ({members.length}名)</h2>
-        {members.length === 0 ? (
-          <p className="text-sm text-gray-400">まだ参加者がいません</p>
-        ) : (
-          <div className="space-y-2">
-            {members.map(m => (
-              <div key={m.id} className="bg-white rounded-xl border border-gray-100 px-4 py-3">
-                <p className="text-sm font-medium">{m.name}</p>
-                <p className="text-xs text-gray-400">{m.grade} · {m.affiliation}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+        {/* Invite link */}
+        <section className="bg-gradient-to-r from-violet-50 to-indigo-50 rounded-3xl p-5 space-y-3">
+          <p className="text-xs font-semibold text-violet-700 uppercase tracking-wide">招待リンク</p>
+          <p className="text-xs text-gray-600 break-all font-mono bg-white rounded-xl px-3 py-2.5">{inviteUrl}</p>
+          <CopyButton text={inviteUrl} />
+        </section>
 
-      {/* Match history */}
-      <section>
-        <h2 className="text-sm font-semibold text-gray-500 mb-3">マッチ履歴</h2>
-        {(matchRows ?? []).length === 0 ? (
-          <p className="text-sm text-gray-400">まだマッチングがありません</p>
-        ) : (
-          <div className="space-y-2">
-            {(matchRows as Match[]).map(m => {
-              const p1 = profileMap[m.user1_id]
-              const p2 = profileMap[m.user2_id]
-              const d = new Date(m.matched_at)
-              const dateStr = `${d.getMonth() + 1}/${d.getDate()}`
-              return (
-                <div key={m.id} className="bg-white rounded-xl border border-gray-100 px-4 py-3 flex items-center justify-between">
-                  <p className="text-sm">
-                    {p1?.name ?? '?'} × {p2?.name ?? '?'}
-                  </p>
-                  <span className="text-xs text-gray-400">{dateStr}</span>
+        {/* Members */}
+        <section>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">参加者 ({members.length}名)</p>
+          {members.length === 0 ? (
+            <p className="text-sm text-gray-400 px-1">まだ参加者がいません</p>
+          ) : (
+            <div className="space-y-2">
+              {members.map(m => (
+                <div key={m.id} className="bg-white rounded-2xl shadow-sm px-4 py-3 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                    {m.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{m.name}</p>
+                    <p className="text-xs text-gray-400">{m.grade} · {m.affiliation}</p>
+                  </div>
                 </div>
-              )
-            })}
-          </div>
-        )}
-      </section>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Match history */}
+        <section>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">マッチ履歴</p>
+          {(matchRows ?? []).length === 0 ? (
+            <p className="text-sm text-gray-400 px-1">まだマッチングがありません</p>
+          ) : (
+            <div className="space-y-2">
+              {(matchRows as Match[]).map(m => {
+                const p1 = profileMap[m.user1_id]
+                const p2 = profileMap[m.user2_id]
+                const d = new Date(m.matched_at)
+                const dateStr = `${d.getMonth() + 1}/${d.getDate()}`
+                return (
+                  <div key={m.id} className="bg-white rounded-2xl shadow-sm px-4 py-3 flex items-center justify-between">
+                    <p className="text-sm text-gray-800">
+                      {p1?.name ?? '?'} × {p2?.name ?? '?'}
+                    </p>
+                    <span className="text-xs text-gray-400 bg-gray-50 rounded-full px-2.5 py-1">{dateStr}</span>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </section>
+
+      </div>
     </main>
   )
 }

@@ -15,9 +15,9 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
 
   if (!group) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center">
-          <p className="text-gray-500">招待リンクが無効です</p>
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-3xl shadow-sm p-8 text-center max-w-sm w-full">
+          <p className="text-gray-500 text-sm">招待リンクが無効です</p>
         </div>
       </main>
     )
@@ -25,7 +25,6 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
 
   if (!user) redirect(`/login?next=/join/${code}`)
 
-  // Already a member?
   const { data: existing } = await supabase
     .from('group_members')
     .select('id')
@@ -49,18 +48,23 @@ export default async function JoinPage({ params }: { params: Promise<{ code: str
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-sm w-full space-y-6 text-center">
-        <div>
-          <p className="text-xs text-gray-400 mb-1">グループに招待されました</p>
-          <h1 className="text-2xl font-bold">{group.name}</h1>
+    <main className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 flex items-center justify-center px-4">
+      <div className="max-w-sm w-full">
+        <div className="bg-white rounded-3xl shadow-lg p-8 text-center space-y-6">
+          <div>
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-violet-400 to-indigo-500 flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+              {group.name.charAt(0)}
+            </div>
+            <p className="text-xs text-gray-400 mb-1">グループに招待されました</p>
+            <h1 className="text-2xl font-bold text-gray-900">{group.name}</h1>
+          </div>
+          <form action={joinGroup}>
+            <button type="submit"
+              className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 text-white rounded-2xl py-3.5 font-semibold hover:opacity-90 transition-opacity shadow-md shadow-violet-200">
+              このグループに参加する
+            </button>
+          </form>
         </div>
-        <form action={joinGroup}>
-          <button type="submit"
-            className="w-full bg-indigo-600 text-white rounded-xl py-3 text-sm font-medium hover:bg-indigo-700 transition-colors">
-            このグループに参加する
-          </button>
-        </form>
       </div>
     </main>
   )

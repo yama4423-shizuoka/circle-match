@@ -12,8 +12,12 @@ export function CopyButton({ text }: { text: string }) {
 
   return (
     <button onClick={copy}
-      className="text-xs text-indigo-600 border border-indigo-300 rounded-lg px-3 py-1.5 hover:bg-indigo-100 transition-colors">
-      {copied ? 'コピーしました' : 'リンクをコピー'}
+      className={`text-xs rounded-xl px-4 py-2 font-medium transition-all ${
+        copied
+          ? 'bg-green-500 text-white'
+          : 'bg-gradient-to-r from-violet-600 to-indigo-500 text-white hover:opacity-90 shadow-sm shadow-violet-200'
+      }`}>
+      {copied ? '✓ コピーしました' : 'リンクをコピー'}
     </button>
   )
 }

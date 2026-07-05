@@ -48,48 +48,54 @@ export default function ProfileSetupPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <div className="max-w-sm w-full space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">プロフィール設定</h1>
-          <p className="mt-1 text-sm text-gray-500">情報を確認して完了してください</p>
+    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8">
+      <div className="w-full max-w-sm">
+
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-gray-900">プロフィール設定</h1>
+          <p className="text-gray-500 text-sm mt-1">情報を確認して完了してください</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">名前</label>
-            <input name="name" required defaultValue={defaults.name} placeholder="山田 花子"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">学年</label>
-            <select name="grade" required key={defaults.grade} defaultValue={defaults.grade}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
-              <option value="">選択してください</option>
-              {GRADES.map(g => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">所属</label>
-            <input name="affiliation" required defaultValue={defaults.affiliation} placeholder="3年2組 / テニス部"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">趣味（任意）</label>
-            <input name="hobbies" defaultValue={defaults.hobbies ?? ''} placeholder="読書、映画、料理"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
-          </div>
+        <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Field label="名前" name="name" defaultValue={defaults.name} placeholder="山田 花子" required />
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">学年</label>
+              <select name="grade" required key={defaults.grade} defaultValue={defaults.grade}
+                className="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-400 appearance-none">
+                <option value="">選択してください</option>
+                {GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+              </select>
+            </div>
 
-          <button type="submit" disabled={loading}
-            className="w-full bg-indigo-600 text-white rounded-xl py-3 text-sm font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50">
-            {loading ? '保存中...' : 'はじめる'}
-          </button>
-        </form>
+            <Field label="所属" name="affiliation" defaultValue={defaults.affiliation} placeholder="3年2組 / テニス部" required />
+            <Field label="趣味（任意）" name="hobbies" defaultValue={defaults.hobbies ?? ''} placeholder="読書、映画、料理" />
+
+            {error && (
+              <div className="bg-red-50 text-red-600 text-sm rounded-xl px-4 py-3">{error}</div>
+            )}
+
+            <button type="submit" disabled={loading}
+              className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 text-white rounded-xl py-3.5 font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 shadow-md shadow-violet-200 mt-2">
+              {loading ? '保存中...' : 'はじめる'}
+            </button>
+          </form>
+        </div>
+
       </div>
     </main>
+  )
+}
+
+function Field({ label, name, type = 'text', placeholder, defaultValue, required }: {
+  label: string; name: string; type?: string; placeholder?: string; defaultValue?: string; required?: boolean
+}) {
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{label}</label>
+      <input name={name} type={type} placeholder={placeholder} defaultValue={defaultValue} required={required}
+        className="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-violet-400" />
+    </div>
   )
 }

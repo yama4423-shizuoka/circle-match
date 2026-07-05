@@ -14,7 +14,6 @@ export default async function AdminPage() {
     .eq('admin_id', user.id)
     .order('created_at', { ascending: false })
 
-  // Member counts
   const counts: Record<string, { members: number; todayMatches: number }> = {}
   for (const g of (groups as Group[]) ?? []) {
     const { count: memberCount } = await supabase
@@ -34,39 +33,42 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="max-w-md mx-auto px-4 py-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <Link href="/dashboard" className="text-xs text-gray-400 hover:text-gray-600">← ダッシュボード</Link>
-          <h1 className="text-xl font-bold mt-1">管理者</h1>
-        </div>
-        <Link href="/admin/groups/new"
-          className="bg-indigo-600 text-white text-sm rounded-xl px-4 py-2 hover:bg-indigo-700 transition-colors">
-          + グループ作成
-        </Link>
-      </div>
-
-      {(groups as Group[] ?? []).length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-          <p>グループがありません</p>
-          <Link href="/admin/groups/new" className="text-indigo-600 text-sm mt-2 inline-block hover:underline">
-            最初のグループを作る
+    <main className="min-h-screen bg-gray-50 pb-10">
+      <div className="bg-white border-b border-gray-100 px-5 pt-14 pb-5">
+        <div className="max-w-md mx-auto flex items-center justify-between">
+          <div>
+            <Link href="/dashboard" className="text-xs text-gray-400 hover:text-gray-600">← ダッシュボード</Link>
+            <h1 className="text-xl font-bold text-gray-900 mt-1">管理者</h1>
+          </div>
+          <Link href="/admin/groups/new"
+            className="bg-gradient-to-r from-violet-600 to-indigo-500 text-white text-sm rounded-2xl px-4 py-2 font-medium hover:opacity-90 transition-opacity shadow-sm shadow-violet-200">
+            + グループ作成
           </Link>
         </div>
-      ) : (
-        <div className="space-y-3">
-          {(groups as Group[]).map(g => (
+      </div>
+
+      <div className="max-w-md mx-auto px-5 pt-5 space-y-3">
+        {((groups as Group[]) ?? []).length === 0 ? (
+          <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-3">
+            <p className="text-gray-400 text-sm">グループがありません</p>
+            <Link href="/admin/groups/new"
+              className="inline-block text-violet-600 text-sm font-medium hover:underline">
+              最初のグループを作る
+            </Link>
+          </div>
+        ) : (
+          (groups as Group[]).map(g => (
             <Link key={g.id} href={`/admin/groups/${g.id}`}
-              className="block bg-white rounded-2xl border border-gray-100 p-4 hover:border-indigo-200 transition-colors">
-              <p className="font-semibold">{g.name}</p>
+              className="block bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-shadow">
+              <p className="font-semibold text-gray-900">{g.name}</p>
               <div className="flex gap-4 mt-2 text-xs text-gray-400">
                 <span>{counts[g.id]?.members ?? 0} 名</span>
                 <span>今日のマッチング: {counts[g.id]?.todayMatches ?? 0} 組</span>
               </div>
             </Link>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </main>
   )
 }
